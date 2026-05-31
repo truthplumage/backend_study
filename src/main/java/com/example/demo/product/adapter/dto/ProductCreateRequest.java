@@ -1,4 +1,4 @@
-package com.example.demo.dto;
+package com.example.demo.product.adapter.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 

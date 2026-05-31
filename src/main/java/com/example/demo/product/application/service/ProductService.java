@@ -1,9 +1,10 @@
-package com.example.demo.service;
+package com.example.demo.product.application.service;
 
-import com.example.demo.dto.ProductCreateRequest;
-import com.example.demo.dto.ProductUpdateRequest;
-import com.example.demo.entity.Product;
-import com.example.demo.repository.ProductJpaRepository;
+import com.example.demo.product.adapter.dto.ProductCreateRequest;
+import com.example.demo.product.adapter.dto.ProductUpdateRequest;
+import com.example.demo.product.domain.Product;
+import com.example.demo.product.application.in.ProductUseCase;
+import com.example.demo.product.application.out.ProductPersistence;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -16,9 +17,9 @@ import java.util.UUID;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class ProductServiceImpl implements ProductService {
+public class ProductService implements ProductUseCase {
 
-    private final ProductJpaRepository productRepository;
+    private final ProductPersistence productPersistence;
 
     @Override
     @Transactional
@@ -32,7 +33,7 @@ public class ProductServiceImpl implements ProductService {
                 request.status(),
                 toUuid(request.creatorId(), "creatorId")
         );
-        return productRepository.save(product);
+        return productPersistence.save(product);
     }
 
     @Override
@@ -43,7 +44,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<Product> getAll() {
-        return productRepository.findAll();
+        return productPersistence.findAll();
     }
 
     @Override
@@ -65,11 +66,11 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public void delete(UUID productId) {
         Product product = findByIdOrThrow(productId);
-        productRepository.delete(product);
+        productPersistence.delete(product);
     }
 
     private Product findByIdOrThrow(UUID productId) {
-        return productRepository.findById(productId)
+        return productPersistence.findById(productId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
     }
 
