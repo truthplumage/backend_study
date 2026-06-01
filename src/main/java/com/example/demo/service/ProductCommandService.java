@@ -3,8 +3,12 @@ package com.example.demo.service;
 import com.example.demo.dto.ProductCreateRequest;
 import com.example.demo.dto.ProductUpdateRequest;
 import com.example.demo.entity.Product;
+import com.example.demo.event.ProductCreatedEvent;
+import com.example.demo.event.ProductDeletedEvent;
+import com.example.demo.event.ProductUpdatedEvent;
 import com.example.demo.repository.ProductJpaRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +22,7 @@ import java.util.UUID;
 public class ProductCommandService implements ProductCommandUseCase {
 
     private final ProductJpaRepository productRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Override
     public Product create(ProductCreateRequest request) {
@@ -30,7 +35,18 @@ public class ProductCommandService implements ProductCommandUseCase {
                 request.status(),
                 toUuid(request.creatorId(), "creatorId")
         );
-        return productRepository.save(product);
+        Product savedProduct = productRepository.save(product);
+        eventPublisher.publishEvent(new ProductCreatedEvent(
+                savedProduct.getId(),
+                savedProduct.getSellerId().toString(),
+                savedProduct.getName(),
+                savedProduct.getDescription(),
+                savedProduct.getPrice(),
+                savedProduct.getStock(),
+                savedProduct.getStatus(),
+                savedProduct.getRegId().toString()
+        ));
+        return savedProduct;
     }
 
     @Override
@@ -44,6 +60,15 @@ public class ProductCommandService implements ProductCommandUseCase {
                 request.status(),
                 toUuid(request.modifierId(), "modifierId")
         );
+        eventPublisher.publishEvent(new ProductUpdatedEvent(
+                product.getId(),
+                product.getName(),
+                product.getDescription(),
+                product.getPrice(),
+                product.getStock(),
+                product.getStatus(),
+                product.getModifyId().toString()
+        ));
         return product;
     }
 
@@ -51,6 +76,7 @@ public class ProductCommandService implements ProductCommandUseCase {
     public void delete(UUID productId) {
         Product product = findByIdOrThrow(productId);
         productRepository.delete(product);
+        eventPublisher.publishEvent(new ProductDeletedEvent(productId));
     }
 
     private Product findByIdOrThrow(UUID productId) {
