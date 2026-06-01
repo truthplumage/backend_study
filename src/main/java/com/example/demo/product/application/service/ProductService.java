@@ -1,9 +1,10 @@
-package com.example.demo.service;
+package com.example.demo.product.application.service;
 
-import com.example.demo.dto.ProductCreateRequest;
-import com.example.demo.dto.ProductUpdateRequest;
-import com.example.demo.entity.Product;
-import com.example.demo.repository.ProductJpaRepository;
+import com.example.demo.product.application.usecase.ProductUseCase;
+import com.example.demo.product.domain.model.Product;
+import com.example.demo.product.domain.repository.ProductRepository;
+import com.example.demo.product.presentation.dto.ProductCreateRequest;
+import com.example.demo.product.presentation.dto.ProductUpdateRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -16,9 +17,9 @@ import java.util.UUID;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class ProductServiceImpl implements ProductService {
+public class ProductService implements ProductUseCase {
 
-    private final ProductJpaRepository productRepository;
+    private final ProductRepository productRepository;
 
     @Override
     @Transactional

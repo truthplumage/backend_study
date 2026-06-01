@@ -1,6 +1,6 @@
-package com.example.demo.repository;
+package com.example.demo.seller.infrastructure.persistence;
 
-import com.example.demo.entity.Seller;
+import com.example.demo.seller.domain.model.Seller;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;

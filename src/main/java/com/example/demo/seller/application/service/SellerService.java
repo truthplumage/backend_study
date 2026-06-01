@@ -1,9 +1,10 @@
-package com.example.demo.service;
+package com.example.demo.seller.application.service;
 
-import com.example.demo.dto.SellerCreateRequest;
-import com.example.demo.dto.SellerUpdateRequest;
-import com.example.demo.entity.Seller;
-import com.example.demo.repository.SellerJpaRepository;
+import com.example.demo.seller.application.usecase.SellerUseCase;
+import com.example.demo.seller.domain.model.Seller;
+import com.example.demo.seller.domain.repository.SellerRepository;
+import com.example.demo.seller.presentation.dto.SellerCreateRequest;
+import com.example.demo.seller.presentation.dto.SellerUpdateRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -16,9 +17,9 @@ import java.util.UUID;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class SellerServiceImpl implements SellerService {
+public class SellerService implements SellerUseCase {
 
-    private final SellerJpaRepository sellerRepository;
+    private final SellerRepository sellerRepository;
 
     @Override
     @Transactional

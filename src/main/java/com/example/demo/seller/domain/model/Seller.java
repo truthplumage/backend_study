@@ -1,4 +1,4 @@
-package com.example.demo.entity;
+package com.example.demo.seller.domain.model;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
