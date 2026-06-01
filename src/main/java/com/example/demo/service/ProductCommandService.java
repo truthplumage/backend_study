@@ -10,18 +10,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
 import java.util.UUID;
 
 @Service
-@Transactional(readOnly = true)
+@Transactional
 @RequiredArgsConstructor
-public class ProductServiceImpl implements ProductService {
+public class ProductCommandService implements ProductCommandUseCase {
 
     private final ProductJpaRepository productRepository;
 
     @Override
-    @Transactional
     public Product create(ProductCreateRequest request) {
         Product product = Product.create(
                 toUuid(request.sellerId(), "sellerId"),
@@ -36,18 +34,6 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product getById(UUID productId) {
-        Product product = findByIdOrThrow(productId);
-        return product;
-    }
-
-    @Override
-    public List<Product> getAll() {
-        return productRepository.findAll();
-    }
-
-    @Override
-    @Transactional
     public Product update(UUID productId, ProductUpdateRequest request) {
         Product product = findByIdOrThrow(productId);
         product.update(
@@ -62,7 +48,6 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    @Transactional
     public void delete(UUID productId) {
         Product product = findByIdOrThrow(productId);
         productRepository.delete(product);
