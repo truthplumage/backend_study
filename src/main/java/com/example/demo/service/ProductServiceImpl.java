@@ -1,5 +1,7 @@
 package com.example.demo.service;
 
+import com.example.demo.acl.SellerAcl;
+import com.example.demo.acl.SellerProfile;
 import com.example.demo.dto.ProductCreateRequest;
 import com.example.demo.dto.ProductUpdateRequest;
 import com.example.demo.entity.Product;
@@ -19,12 +21,14 @@ import java.util.UUID;
 public class ProductServiceImpl implements ProductService {
 
     private final ProductJpaRepository productRepository;
+    private final SellerAcl sellerAcl;
 
     @Override
     @Transactional
     public Product create(ProductCreateRequest request) {
+        SellerProfile sellerProfile = sellerAcl.getActiveSeller(request.sellerId());
         Product product = Product.create(
-                toUuid(request.sellerId(), "sellerId"),
+                sellerProfile.sellerId(),
                 request.name(),
                 request.description(),
                 request.price(),
