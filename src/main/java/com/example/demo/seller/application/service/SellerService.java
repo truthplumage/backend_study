@@ -1,9 +1,10 @@
-package com.example.demo.service;
+package com.example.demo.seller.application.service;
 
-import com.example.demo.dto.SellerCreateRequest;
-import com.example.demo.dto.SellerUpdateRequest;
-import com.example.demo.entity.Seller;
-import com.example.demo.repository.SellerJpaRepository;
+import com.example.demo.seller.adapter.in.web.dto.SellerCreateRequest;
+import com.example.demo.seller.adapter.in.web.dto.SellerUpdateRequest;
+import com.example.demo.seller.application.port.in.SellerUseCase;
+import com.example.demo.seller.application.port.out.SellerRepositoryPort;
+import com.example.demo.seller.domain.model.Seller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -16,9 +17,9 @@ import java.util.UUID;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class SellerServiceImpl implements SellerService {
+public class SellerService implements SellerUseCase {
 
-    private final SellerJpaRepository sellerRepository;
+    private final SellerRepositoryPort sellerRepositoryPort;
 
     @Override
     @Transactional
@@ -30,7 +31,7 @@ public class SellerServiceImpl implements SellerService {
                 request.status(),
                 toUuid(request.creatorId(), "creatorId")
         );
-        return sellerRepository.save(seller);
+        return sellerRepositoryPort.save(seller);
     }
 
     @Override
@@ -40,7 +41,7 @@ public class SellerServiceImpl implements SellerService {
 
     @Override
     public List<Seller> getAll() {
-        return sellerRepository.findAll();
+        return sellerRepositoryPort.findAll();
     }
 
     @Override
@@ -61,11 +62,11 @@ public class SellerServiceImpl implements SellerService {
     @Transactional
     public void delete(UUID sellerId) {
         Seller seller = findByIdOrThrow(sellerId);
-        sellerRepository.delete(seller);
+        sellerRepositoryPort.delete(seller);
     }
 
     private Seller findByIdOrThrow(UUID sellerId) {
-        return sellerRepository.findById(sellerId)
+        return sellerRepositoryPort.findById(sellerId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Seller not found"));
     }
 
