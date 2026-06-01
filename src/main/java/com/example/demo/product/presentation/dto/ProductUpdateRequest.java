@@ -1,8 +1,9 @@
-package com.example.demo.dto;
+package com.example.demo.product.presentation.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.math.BigDecimal;
+
 @Schema(description = "상품 수정 정보")
 public record ProductUpdateRequest(
         @Schema(description = "상품명", example = "맥북 프로 14")

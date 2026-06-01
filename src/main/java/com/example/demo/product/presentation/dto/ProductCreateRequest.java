@@ -1,8 +1,9 @@
-package com.example.demo.dto;
+package com.example.demo.product.presentation.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.math.BigDecimal;
+
 @Schema(description = "상품 생성 정보")
 public record ProductCreateRequest(
         @Schema(description = "판매자 ID", example = "11111111-1111-1111-1111-111111111111")
