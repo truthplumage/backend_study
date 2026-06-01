@@ -1,11 +1,15 @@
 package com.example.demo.seller.application.service;
 
+import com.example.demo.seller.application.event.SellerCreatedEvent;
+import com.example.demo.seller.application.event.SellerDeletedEvent;
+import com.example.demo.seller.application.event.SellerUpdatedEvent;
 import com.example.demo.seller.application.usecase.SellerCommandUseCase;
 import com.example.demo.seller.domain.model.Seller;
 import com.example.demo.seller.domain.repository.SellerRepository;
 import com.example.demo.seller.presentation.dto.SellerCreateRequest;
 import com.example.demo.seller.presentation.dto.SellerUpdateRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +23,7 @@ import java.util.UUID;
 public class SellerCommandService implements SellerCommandUseCase {
 
     private final SellerRepository sellerRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Override
     public Seller create(SellerCreateRequest request) {
@@ -29,7 +34,9 @@ public class SellerCommandService implements SellerCommandUseCase {
                 request.status(),
                 toUuid(request.creatorId(), "creatorId")
         );
-        return sellerRepository.save(seller);
+        Seller savedSeller = sellerRepository.save(seller);
+        eventPublisher.publishEvent(new SellerCreatedEvent(savedSeller.getId()));
+        return savedSeller;
     }
 
     @Override
@@ -42,6 +49,7 @@ public class SellerCommandService implements SellerCommandUseCase {
                 request.status(),
                 toUuid(request.modifierId(), "modifierId")
         );
+        eventPublisher.publishEvent(new SellerUpdatedEvent(seller.getId()));
         return seller;
     }
 
@@ -49,6 +57,7 @@ public class SellerCommandService implements SellerCommandUseCase {
     public void delete(UUID sellerId) {
         Seller seller = findByIdOrThrow(sellerId);
         sellerRepository.delete(seller);
+        eventPublisher.publishEvent(new SellerDeletedEvent(sellerId));
     }
 
     private Seller findByIdOrThrow(UUID sellerId) {
