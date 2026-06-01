@@ -1,8 +1,10 @@
 package com.example.demo.seller.application.service;
 
 import com.example.demo.seller.application.usecase.SellerUseCase;
+import com.example.demo.seller.domain.model.BusinessVerification;
 import com.example.demo.seller.domain.model.Seller;
 import com.example.demo.seller.domain.repository.SellerRepository;
+import com.example.demo.seller.infrastructure.acl.BusinessVerificationAcl;
 import com.example.demo.seller.presentation.dto.SellerCreateRequest;
 import com.example.demo.seller.presentation.dto.SellerUpdateRequest;
 import lombok.RequiredArgsConstructor;
@@ -20,10 +22,15 @@ import java.util.UUID;
 public class SellerService implements SellerUseCase {
 
     private final SellerRepository sellerRepository;
+    private final BusinessVerificationAcl businessVerificationAcl;
 
     @Override
     @Transactional
     public Seller create(SellerCreateRequest request) {
+        BusinessVerification verification = businessVerificationAcl.verify(request.businessNumber());
+        if (!verification.valid()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Business number is not valid");
+        }
         Seller seller = Seller.create(
                 request.email(),
                 request.name(),
