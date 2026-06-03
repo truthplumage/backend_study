@@ -1,7 +1,9 @@
 package com.example.demo.product.application.service;
 
+import com.example.demo.product.application.acl.SellerValidationAcl;
 import com.example.demo.product.application.usecase.ProductUseCase;
 import com.example.demo.product.domain.model.Product;
+import com.example.demo.product.domain.model.SellerValidation;
 import com.example.demo.product.domain.repository.ProductRepository;
 import com.example.demo.product.presentation.dto.ProductCreateRequest;
 import com.example.demo.product.presentation.dto.ProductUpdateRequest;
@@ -20,12 +22,17 @@ import java.util.UUID;
 public class ProductService implements ProductUseCase {
 
     private final ProductRepository productRepository;
+    private final SellerValidationAcl sellerValidationAcl;
 
     @Override
     @Transactional
     public Product create(ProductCreateRequest request) {
+        SellerValidation sellerValidation = sellerValidationAcl.validate(toUuid(request.sellerId(), "sellerId"));
+        if (!sellerValidation.isActive()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Seller is not active");
+        }
         Product product = Product.create(
-                toUuid(request.sellerId(), "sellerId"),
+                sellerValidation.sellerId(),
                 request.name(),
                 request.description(),
                 request.price(),
