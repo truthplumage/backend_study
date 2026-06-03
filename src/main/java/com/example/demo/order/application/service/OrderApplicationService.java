@@ -1,6 +1,7 @@
 package com.example.demo.order.application.service;
 
 import com.example.demo.order.application.dto.CreateOrderCommand;
+import com.example.demo.order.application.dto.MarkOrdersSettledCommand;
 import com.example.demo.order.application.dto.MarkOrderPaidCommand;
 import com.example.demo.order.application.dto.OrderResult;
 import com.example.demo.order.application.usecase.OrderUseCase;
@@ -52,6 +53,17 @@ public class OrderApplicationService implements OrderUseCase {
                 .orElseThrow(() -> new IllegalArgumentException("Order not found: " + command.orderNo()));
         order.markPaid(command.paidAt(), resolveActorId(command));
         return toResponse(order);
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void markSettled(MarkOrdersSettledCommand command) {
+        UUID actorId = command.actorId() == null ? UUID.randomUUID() : command.actorId();
+        command.orderIds().forEach(orderId -> {
+            Order order = orderRepository.findById(orderId)
+                    .orElseThrow(() -> new IllegalArgumentException("Order not found: " + orderId));
+            order.markSettled(command.settlementBatchId(), actorId);
+        });
     }
 
     @Override
