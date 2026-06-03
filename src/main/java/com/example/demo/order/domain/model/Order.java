@@ -152,6 +152,12 @@ public class Order {
         this.modifyId = actorId;
     }
 
+    public void markPaid(LocalDateTime paidAt, UUID actorId) {
+        this.status = "PAID";
+        this.paidAt = paidAt == null ? LocalDateTime.now() : paidAt;
+        this.modifyId = actorId;
+    }
+
     @PrePersist
     public void onCreate() {
         if (id == null) {

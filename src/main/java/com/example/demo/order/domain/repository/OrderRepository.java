@@ -13,6 +13,8 @@ public interface OrderRepository {
 
     Optional<Order> findById(UUID id);
 
+    Optional<Order> findByOrderNo(String orderNo);
+
     Order save(Order order);
 
     List<Order> findUnsettledPaidOrders(LocalDateTime fromInclusive, LocalDateTime toExclusive);
