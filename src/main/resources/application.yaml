@@ -11,6 +11,9 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+  batch:
+    jdbc:
+      initialize-schema: always
 
 payment:
   toss:
