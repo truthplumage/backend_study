@@ -1,6 +1,5 @@
 package com.example.demo.seller.application.service;
 
-import com.example.demo.seller.application.usecase.SellerUseCase;
 import com.example.demo.seller.domain.model.BusinessVerification;
 import com.example.demo.seller.application.event.SellerCreatedEvent;
 import com.example.demo.seller.application.event.SellerDeletedEvent;
