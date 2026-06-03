@@ -1,6 +1,7 @@
 package com.example.demo.seller.presentation;
 
-import com.example.demo.seller.application.usecase.SellerUseCase;
+import com.example.demo.seller.application.usecase.SellerCommandUseCase;
+import com.example.demo.seller.application.usecase.SellerQueryUseCase;
 import com.example.demo.seller.domain.model.Seller;
 import com.example.demo.seller.presentation.dto.SellerCreateRequest;
 import com.example.demo.seller.presentation.dto.SellerUpdateRequest;
@@ -23,7 +24,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class SellerController {
 
-    private final SellerUseCase sellerUseCase;
+    private final SellerCommandUseCase sellerCommandUseCase;
+    private final SellerQueryUseCase sellerQueryUseCase;
 
     @PostMapping
     @Operation(summary = "판매자 생성", description = "신규 판매자를 생성합니다.")
@@ -33,7 +35,7 @@ public class SellerController {
             @ApiResponse(responseCode = "400", description = "요청 값 오류")
     })
     public ResponseEntity<Seller> create(@RequestBody SellerCreateRequest request) {
-        Seller response = sellerUseCase.create(request);
+        Seller response = sellerCommandUseCase.create(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -45,7 +47,7 @@ public class SellerController {
             @ApiResponse(responseCode = "404", description = "판매자 없음")
     })
     public Seller getById(@Parameter(description = "판매자 UUID") @PathVariable UUID sellerId) {
-        return sellerUseCase.getById(sellerId);
+        return sellerQueryUseCase.getById(sellerId);
     }
 
     @GetMapping
@@ -54,7 +56,7 @@ public class SellerController {
             @ApiResponse(responseCode = "200", description = "조회 성공")
     })
     public List<Seller> getAll() {
-        return sellerUseCase.getAll();
+        return sellerQueryUseCase.getAll();
     }
 
     @PutMapping("/{sellerId}")
@@ -66,7 +68,7 @@ public class SellerController {
     })
     public Seller update(@Parameter(description = "판매자 UUID") @PathVariable UUID sellerId,
                          @RequestBody SellerUpdateRequest request) {
-        return sellerUseCase.update(sellerId, request);
+        return sellerCommandUseCase.update(sellerId, request);
     }
 
     @DeleteMapping("/{sellerId}")
@@ -76,7 +78,7 @@ public class SellerController {
             @ApiResponse(responseCode = "404", description = "판매자 없음")
     })
     public ResponseEntity<Void> delete(@Parameter(description = "판매자 UUID") @PathVariable UUID sellerId) {
-        sellerUseCase.delete(sellerId);
+        sellerCommandUseCase.delete(sellerId);
         return ResponseEntity.noContent().build();
     }
 }

@@ -1,6 +1,7 @@
 package com.example.demo.product.presentation;
 
-import com.example.demo.product.application.usecase.ProductUseCase;
+import com.example.demo.product.application.usecase.ProductCommandUseCase;
+import com.example.demo.product.application.usecase.ProductQueryUseCase;
 import com.example.demo.product.domain.model.Product;
 import com.example.demo.product.presentation.dto.ProductCreateRequest;
 import com.example.demo.product.presentation.dto.ProductUpdateRequest;
@@ -22,7 +23,8 @@ import java.util.UUID;
 @RequestMapping("${api.init}/product")
 @RequiredArgsConstructor
 public class ProductController {
-    private final ProductUseCase productUseCase;
+    private final ProductCommandUseCase productCommandUseCase;
+    private final ProductQueryUseCase productQueryUseCase;
     @PostMapping
     @Operation(summary = "상품 생성", description = "신규 상품을 생성합니다.")
     @ApiResponses({
@@ -31,7 +33,7 @@ public class ProductController {
             @ApiResponse(responseCode = "400", description = "요청 값 오류")
     })
     public ResponseEntity<Product> create(@RequestBody ProductCreateRequest request) {
-        Product response = productUseCase.create(request);
+        Product response = productCommandUseCase.create(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -43,7 +45,7 @@ public class ProductController {
             @ApiResponse(responseCode = "404", description = "상품 없음")
     })
     public Product getById(@Parameter(description = "상품 UUID") @PathVariable UUID productId) {
-        return productUseCase.getById(productId);
+        return productQueryUseCase.getById(productId);
     }
 
     @GetMapping
@@ -52,7 +54,7 @@ public class ProductController {
             @ApiResponse(responseCode = "200", description = "조회 성공")
     })
     public List<Product> getAll() {
-        return productUseCase.getAll();
+        return productQueryUseCase.getAll();
     }
 
     @PutMapping("/{productId}")
@@ -64,7 +66,7 @@ public class ProductController {
     })
     public Product update(@Parameter(description = "상품 UUID") @PathVariable UUID productId,
                           @RequestBody ProductUpdateRequest request) {
-        return productUseCase.update(productId, request);
+        return productCommandUseCase.update(productId, request);
     }
 
     @DeleteMapping("/{productId}")
@@ -74,7 +76,7 @@ public class ProductController {
             @ApiResponse(responseCode = "404", description = "상품 없음")
     })
     public ResponseEntity<Void> delete(@Parameter(description = "상품 UUID") @PathVariable UUID productId) {
-        productUseCase.delete(productId);
+        productCommandUseCase.delete(productId);
         return ResponseEntity.noContent().build();
     }
 }

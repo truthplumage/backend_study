@@ -1,28 +1,31 @@
 package com.example.demo.product.application.service;
 
-import com.example.demo.product.application.usecase.ProductUseCase;
+import com.example.demo.product.application.usecase.ProductCommandUseCase;
+import com.example.demo.product.application.event.ProductCreatedEvent;
+import com.example.demo.product.application.event.ProductDeletedEvent;
+import com.example.demo.product.application.event.ProductUpdatedEvent;
 import com.example.demo.product.domain.model.Product;
 import com.example.demo.product.domain.repository.ProductRepository;
 import com.example.demo.product.presentation.dto.ProductCreateRequest;
 import com.example.demo.product.presentation.dto.ProductUpdateRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
 import java.util.UUID;
 
 @Service
-@Transactional(readOnly = true)
+@Transactional
 @RequiredArgsConstructor
-public class ProductService implements ProductUseCase {
+public class ProductCommandService implements ProductCommandUseCase {
 
     private final ProductRepository productRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Override
-    @Transactional
     public Product create(ProductCreateRequest request) {
         Product product = Product.create(
                 toUuid(request.sellerId(), "sellerId"),
@@ -33,22 +36,12 @@ public class ProductService implements ProductUseCase {
                 request.status(),
                 toUuid(request.creatorId(), "creatorId")
         );
-        return productRepository.save(product);
+        Product savedProduct = productRepository.save(product);
+        eventPublisher.publishEvent(new ProductCreatedEvent(savedProduct.getId()));
+        return savedProduct;
     }
 
     @Override
-    public Product getById(UUID productId) {
-        Product product = findByIdOrThrow(productId);
-        return product;
-    }
-
-    @Override
-    public List<Product> getAll() {
-        return productRepository.findAll();
-    }
-
-    @Override
-    @Transactional
     public Product update(UUID productId, ProductUpdateRequest request) {
         Product product = findByIdOrThrow(productId);
         product.update(
@@ -59,14 +52,15 @@ public class ProductService implements ProductUseCase {
                 request.status(),
                 toUuid(request.modifierId(), "modifierId")
         );
+        eventPublisher.publishEvent(new ProductUpdatedEvent(product.getId()));
         return product;
     }
 
     @Override
-    @Transactional
     public void delete(UUID productId) {
         Product product = findByIdOrThrow(productId);
         productRepository.delete(product);
+        eventPublisher.publishEvent(new ProductDeletedEvent(productId));
     }
 
     private Product findByIdOrThrow(UUID productId) {
