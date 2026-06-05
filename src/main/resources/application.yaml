@@ -1,21 +1,30 @@
+server:
+  port: 0
+
 spring:
+  application:
+    name: demo-service
   config:
     import: optional:file:.env[.properties]
-  application:
-    name: demo
-  datasource:
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:postgres}
-    username: ${DB_USERNAME:}
-    password: ${DB_PASSWORD:}
-    driver-class-name: org.postgresql.Driver
-  jpa:
-    hibernate:
-      ddl-auto: update
-  batch:
-    job:
-      enabled: false
-    jdbc:
-      initialize-schema: always
+#  batch:
+#    job:
+#      enabled: false
+#    jdbc:
+#      initialize-schema: always
+
+#  datasource:
+#    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:postgres}
+#    username: ${DB_USERNAME:}
+#    password: ${DB_PASSWORD:}
+#    driver-class-name: org.postgresql.Driver
+#  jpa:
+#    show-sql: true
+#    properties:
+#      hibernate:
+#        format_sql: true
+#    hibernate:
+#      ddl-auto: update
+
 
 payment:
   toss:
@@ -24,7 +33,26 @@ payment:
 api:
   init: /api/v1
 
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.orm.jdbc.bind: trace
+
 settlement:
   batch:
     cron: "0 0 3 * * *"
     actor-id: 00000000-0000-0000-0000-000000000000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: refresh, health, beans, info, prometheus
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://admin:admin@${eureka.instance.hostname:localhost}:8761/eureka
