@@ -60,3 +60,11 @@ eureka:
 jwt:
   private-key: ${PRIVATE_KEY}
   public-key: ${PUBLIC_KEY}
+
+kafka:
+  enabled: true
+  bootstrap-servers: localhost:9092
+  topic:
+    async-orders: async-orders
+  consumer:
+    group-id: async-sample-group
