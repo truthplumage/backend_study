@@ -11,7 +11,10 @@ import com.example.demo.member.presentation.dto.MemberRes;
 import com.example.demo.member.presentation.dto.TokenRes;
 import com.example.demo.member.util.JwtProvider;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Request;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.RequestAttributes;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
@@ -34,8 +37,18 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public TokenRes login(Login login) throws NoSuchAlgorithmException, InvalidKeySpecException {
+    public TokenRes login(@RequestBody Login login) throws NoSuchAlgorithmException, InvalidKeySpecException {
         Token tok = memberUsecase.login(new MemberLogin(login.email(), login.password()));
+        return new TokenRes(tok.refreshToken(), tok.accessToken());
+    }
+
+//    @GetMapping("/refreshToken")
+    @PostMapping("/refreshToken")// swagger 테스트 전용.
+    public TokenRes refreshToken(
+//            @RequestHeader("RefreshToken") String refreshToken,
+            @RequestBody String refreshToken
+    ) throws NoSuchAlgorithmException, InvalidKeySpecException {
+        Token tok = memberUsecase.refreshToken(refreshToken);
         return new TokenRes(tok.refreshToken(), tok.accessToken());
     }
 }

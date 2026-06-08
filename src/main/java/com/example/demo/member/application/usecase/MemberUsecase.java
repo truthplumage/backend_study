@@ -11,4 +11,6 @@ import java.security.spec.InvalidKeySpecException;
 public interface MemberUsecase {
     MemberResQuery join(MemberCreateCommand createCommand);
     Token login(MemberLogin memberLogin) throws NoSuchAlgorithmException, InvalidKeySpecException;
+
+    Token refreshToken(String refreshToken) throws NoSuchAlgorithmException, InvalidKeySpecException;
 }

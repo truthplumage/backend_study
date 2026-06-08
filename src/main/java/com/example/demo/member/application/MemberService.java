@@ -8,7 +8,9 @@ import com.example.demo.member.application.usecase.MemberUsecase;
 import com.example.demo.member.domain.Member;
 import com.example.demo.member.domain.repository.MemberRepository;
 import com.example.demo.member.util.JwtProvider;
+import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -21,6 +23,7 @@ import java.security.spec.InvalidKeySpecException;
 import java.util.Base64;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MemberService implements MemberUsecase {
@@ -52,8 +55,7 @@ public class MemberService implements MemberUsecase {
         if(memberOptional.isPresent()){
             if(encoder.matches(memberLogin.password()+memberOptional.get().getSaltKey(), memberOptional.get().getPassword())){
                 Authentication authentication = new UsernamePasswordAuthenticationToken(memberOptional.get().getId().toString(), null, null);
-                String token = jwtProvider.generateToken(authentication);
-                return new Token(token, token);
+                return new Token(jwtProvider.generateToken(authentication), jwtProvider.generateRefreshToken(authentication));
             }else{
                 //TODO: 패스워드가 맞지 않음.
             }
@@ -62,4 +64,15 @@ public class MemberService implements MemberUsecase {
         }
         return null;
     }
+
+    @Override
+    public Token refreshToken(String refreshToken) throws NoSuchAlgorithmException, InvalidKeySpecException {
+        String subjects = jwtProvider.verifyToken(refreshToken);
+        log.info("subjects = {}", subjects);
+        //TODO: DB구조에 맞춰서 호출
+        Authentication authentication = new UsernamePasswordAuthenticationToken(subjects, null, null);
+        //TODO: DB에 입력
+        return new Token(jwtProvider.generateToken(authentication), jwtProvider.generateRefreshToken(authentication));
+    }
+
 }
