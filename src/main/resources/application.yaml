@@ -56,3 +56,7 @@ eureka:
     fetch-registry: true
     service-url:
       defaultZone: http://admin:admin@${eureka.instance.hostname:localhost}:8761/eureka
+
+jwt:
+  private-key: ${PRIVATE_KEY}
+  public-key: ${PUBLIC_KEY}
