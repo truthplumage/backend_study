@@ -23,6 +23,8 @@ public class SecurityConfig {
                         auth
 //                                .requestMatchers("/api/member/**").permitAll()
                                 .requestMatchers("/swagger-ui/**").permitAll()
+                                .requestMatchers("/toss-payment.html").permitAll()
+                                .requestMatchers("/payments/**").permitAll()
                                 .requestMatchers("/swagger-ui.html").permitAll()
                                 .requestMatchers("/v3/**").permitAll()
                                 .requestMatchers("/api/**").permitAll()

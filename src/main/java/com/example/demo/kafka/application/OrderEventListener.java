@@ -7,6 +7,9 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Component
 //@ConditionalOnProperty(prefix = "kafka", name = "enabled", havingValue = "true", matchIfMissing = true)
@@ -14,13 +17,14 @@ import java.time.Duration;
 @Slf4j
 public class OrderEventListener {
 
-//    private final ExecutorService workerPool = Executors.newFixedThreadPool(4);
+//    private final ExecutorService workerPool = Executors.newFixedThreadPool(3);
 
     // 주문 토픽을 구독해 브로커에서 메시지가 들어오면 비동기로 처리한다.
     @KafkaListener(
             topics = "${kafka.topic.async-orders:async-orders}",
             groupId = "${kafka.consumer.group-id:async-sample-group}",
             containerFactory = "asyncOrderKafkaListenerContainerFactory"
+//            , concurrency = "3"//partition 갯수에 맞춰서 하는게 좋음.
     )
     public void handle(OrderEvent event) {
         log.info("handle {}", event.orderId());
