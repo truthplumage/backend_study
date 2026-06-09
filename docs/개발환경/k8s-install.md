@@ -11,8 +11,7 @@
 ## Windows 10/11
 ### A) Docker Desktop 내장 쿠버네티스 (가장 간단)
 1. Docker Desktop 설치 (WSL2 권장) → [https://docs.docker.com/desktop/install/windows](https://docs.docker.com/desktop/install/windows)
-2. Docker Desktop 실행 → Settings → Kubernetes → "Enable Kubernetes" 체크 → Apply & Restart
-3. `kubectl` 클라이언트는 Docker Desktop에 포함됩니다. PowerShell에서 확인:
+2`kubectl` 클라이언트는 Docker Desktop에 포함됩니다. PowerShell에서 확인:
    ```powershell
    kubectl version --client
    kubectl get nodes
@@ -38,8 +37,7 @@
 ## macOS (Intel/Apple Silicon 공통)
 ### A) Docker Desktop 내장 쿠버네티스
 1. Docker Desktop 설치 → [https://docs.docker.com/desktop/install/mac](https://docs.docker.com/desktop/install/mac)
-2. Docker Desktop 실행 → Settings → Kubernetes → "Enable Kubernetes" 체크 → Apply & Restart
-3. 터미널에서 확인:
+2. 터미널에서 확인:
    ```bash
    kubectl version --client
    kubectl get nodes

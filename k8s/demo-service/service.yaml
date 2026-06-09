@@ -5,6 +5,7 @@ metadata:
   namespace: msa
 spec:
   type: LoadBalancer
+#  type: ClusterIP # 인그레스 전용
 #  type: NodePort
   selector:
     app: demo-service
