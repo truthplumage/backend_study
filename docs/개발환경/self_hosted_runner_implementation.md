@@ -67,7 +67,16 @@ kubectl apply -k k8s/core
 
 ---
 
-## 4. Runner 설치
+## 4. Runner 설치 방법
+
+설치는 **Runner를 실행할 PC 또는 서버**에서 한다.
+
+개인 PC에 설치해도 되지만, PC가 꺼져 있으면 GitHub Actions 작업도 실행되지 않는다.
+계속 자동 배포하려면 항상 켜져 있는 서버, VM, Mac mini, EC2 같은 환경이 더 좋다.
+
+---
+
+### 4.1 GitHub에서 Runner 등록 화면 열기
 
 GitHub Repository에서:
 
@@ -78,7 +87,23 @@ Settings
   → New self-hosted runner
 ```
 
-운영체제 선택 후 GitHub가 안내하는 명령어를 그대로 실행한다.
+여기서 Runner를 설치할 운영체제를 선택한다.
+
+예:
+
+```text
+macOS
+Architecture: ARM64
+```
+
+Apple Silicon Mac이면 보통 `ARM64`를 선택한다.
+Intel Mac이면 `x64`를 선택한다.
+
+---
+
+### 4.2 GitHub가 보여주는 명령어 실행
+
+GitHub 화면에 나오는 명령어를 그대로 복사해서 터미널에서 실행한다.
 
 예시:
 
@@ -90,23 +115,138 @@ curl -o actions-runner-osx-arm64.tar.gz -L https://github.com/actions/runner/rel
 tar xzf ./actions-runner-osx-arm64.tar.gz
 ```
 
-Runner 등록:
+주의:
+
+```text
+v2.xxx.x, x.y.z, token 값은 GitHub 화면에서 발급된 실제 값으로 사용한다.
+```
+
+---
+
+### 4.3 Runner 등록
 
 ```bash
 ./config.sh --url https://github.com/계정명/저장소명 --token 발급받은토큰
 ```
 
-Runner 실행:
+실행하면 몇 가지를 물어본다.
+
+보통은 기본값으로 Enter를 눌러도 된다.
+
+예:
+
+```text
+Runner group: Default
+Runner name: 현재 PC 이름
+Labels: self-hosted, macOS, ARM64
+Work folder: _work
+```
+
+프로젝트에서 특정 라벨을 쓰고 싶으면 추가할 수 있다.
+
+예:
+
+```text
+self-hosted, macos, minikube
+```
+
+---
+
+### 4.4 Runner 직접 실행
+
+터미널에서 직접 실행:
 
 ```bash
 ./run.sh
 ```
 
-백그라운드 서비스로 등록하려면:
+이 방식은 터미널을 닫으면 Runner도 종료된다.
+
+테스트용으로는 괜찮지만, 계속 쓰려면 서비스 등록을 추천한다.
+
+---
+
+### 4.5 백그라운드 서비스 등록
+
+macOS 기준:
 
 ```bash
 sudo ./svc.sh install
 sudo ./svc.sh start
+```
+
+상태 확인:
+
+```bash
+sudo ./svc.sh status
+```
+
+중지:
+
+```bash
+sudo ./svc.sh stop
+```
+
+삭제:
+
+```bash
+sudo ./svc.sh uninstall
+```
+
+---
+
+### 4.6 GitHub Actions에서 사용
+
+Workflow에서 `runs-on`을 `self-hosted`로 지정한다.
+
+```yaml
+jobs:
+  deploy:
+    runs-on: self-hosted
+```
+
+라벨을 추가했다면 이렇게 쓸 수 있다.
+
+```yaml
+jobs:
+  deploy:
+    runs-on: [self-hosted, macos, minikube]
+```
+
+---
+
+### 4.7 설치 확인
+
+GitHub Repository에서:
+
+```text
+Settings
+  → Actions
+  → Runners
+```
+
+Runner 상태가 `Idle`이면 정상 등록된 것이다.
+
+```text
+Idle: 대기 중
+Active: 작업 실행 중
+Offline: Runner 꺼짐 또는 연결 안 됨
+```
+
+---
+
+### 4.8 Runner 제거 후 재등록
+
+기존 Runner를 지우고 다시 등록해야 할 때:
+
+```bash
+./config.sh remove --token 발급받은토큰
+```
+
+그 다음 GitHub에서 새 token을 발급받아 다시 등록한다.
+
+```bash
+./config.sh --url https://github.com/계정명/저장소명 --token 새토큰
 ```
 
 ---
