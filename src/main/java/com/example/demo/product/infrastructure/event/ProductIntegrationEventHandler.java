@@ -38,13 +38,13 @@ public class ProductIntegrationEventHandler {
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handle(ProductUpdatedEvent event) {
-
+        //TODO: 검색에 제품 데이터를 수정하는 부분 추가 필요(kafka 통신을 통해서 동작되게 하여 의존성이 없도록 하는게 포인트).
         log.info("Product updated event handled after commit. productId={}", event.productId());
     }
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handle(ProductDeletedEvent event) {
-
+        //TODO: 검색에 제품 데이터를 삭제하는 부분 추가 필요(kafka 통신을 통해서 동작되게 하여 의존성이 없도록 하는게 포인트).
         log.info("Product deleted event handled after commit. productId={}", event.productId());
     }
 }
