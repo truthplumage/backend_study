@@ -23,7 +23,7 @@ public class ProductIntegrationEventHandler {
     private final KafkaTemplate<String, ProductToSearch> kafkaTemplate;
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handle(ProductCreatedEvent event) {
-        //TODO: 검색에 제품 데이터를 입력하는 부분 추가 필요(kafka 통신을 통해서 동작되게 하여 의존성이 없도록 하는게 포인트).
+        //검색에 제품 데이터를 입력하는 부분 추가 필요(kafka 통신을 통해서 동작되게 하여 의존성이 없도록 하는게 포인트).
         ProductToSearch<ProductSave> productToSearch = new ProductToSearch<>("create", new ProductSave(event.productId().toString(),
                 event.name(), event.brand(), event.category(), event.price()));
         kafkaTemplate.send(topicName, productToSearch.payload().id(), productToSearch)
