@@ -1,15 +1,28 @@
 package com.example.demo.search.application;
 
+import co.elastic.clients.elasticsearch._types.aggregations.AggregationRange;
 import co.elastic.clients.elasticsearch._types.query_dsl.Operator;
+import co.elastic.clients.elasticsearch._types.aggregations.AggregationBuilders;
+import org.springframework.data.elasticsearch.client.elc.ElasticsearchAggregation;
+import org.springframework.data.elasticsearch.client.elc.ElasticsearchAggregations;
 import com.example.demo.search.infrastructure.ProductSearchRepository;
+import com.example.demo.search.infrastructure.SearchKeywordRepository;
 import com.example.demo.search.infrastructure.dto.ProductDocument;
+import com.example.demo.search.infrastructure.dto.SearchKeywordDocument;
 import com.example.demo.search.presentation.dto.request.IndexConfigRequest;
 import com.example.demo.search.presentation.dto.request.ProductIndexRequest;
+import com.example.demo.search.presentation.dto.response.PopularKeywordItemResponse;
+import com.example.demo.search.presentation.dto.response.PopularKeywordResponse;
+import com.example.demo.search.presentation.dto.response.ProductFilterAggregationResponse;
+import com.example.demo.search.presentation.dto.response.ProductFilterBucketResponse;
 import com.example.demo.search.presentation.dto.response.IndexStatusResponse;
 import com.example.demo.search.presentation.dto.response.IndexUpdateResponse;
 import com.example.demo.search.presentation.dto.response.ProductSearchResponse;
+import com.example.demo.search.presentation.dto.response.ProductSuggestItemResponse;
+import com.example.demo.search.presentation.dto.response.ProductSuggestResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.IndexOperations;
@@ -19,6 +32,8 @@ import org.springframework.data.elasticsearch.core.document.Document;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +45,7 @@ public class SearchService implements SearchUsecase{
 
     private final ElasticsearchOperations operations;
     private final ProductSearchRepository repository;
+    private final SearchKeywordRepository searchKeywordRepository;
 
     // 상품 문서를 ES에 저장(id는 ES 자동 생성, updatedAt은 현재 시각)
     public ProductDocument indexProduct(ProductIndexRequest request) {
@@ -80,6 +96,7 @@ public class SearchService implements SearchUsecase{
     }
 
     public ProductSearchResponse searchProducts(String keyword, String category, Pageable pageable) {
+        recordKeyword(keyword);
         NativeQuery query = NativeQuery.builder()
             .withQuery(q -> q.bool(b -> {
                 if (keyword != null && !keyword.isBlank()) {
@@ -106,5 +123,123 @@ public class SearchService implements SearchUsecase{
             .toList();
 
         return new ProductSearchResponse(hits.getTotalHits(), items);
+    }
+
+    public ProductSuggestResponse suggestProducts(String keyword, int size) {
+        if (keyword == null || keyword.isBlank()) {
+            return new ProductSuggestResponse(List.of());
+        }
+
+        NativeQuery query = NativeQuery.builder()
+                .withQuery(q -> q.matchPhrasePrefix(m -> m.field("name").query(keyword)))
+                .withPageable(PageRequest.of(0, size))
+                .build();
+
+        SearchHits<ProductDocument> hits = operations.search(query, ProductDocument.class);
+        List<ProductSuggestItemResponse> items = hits.getSearchHits().stream()
+                .map(SearchHit::getContent)
+                .map(doc -> new ProductSuggestItemResponse(doc.getId(), doc.getName(), doc.getBrand()))
+                .toList();
+
+        return new ProductSuggestResponse(items);
+    }
+
+    public ProductFilterAggregationResponse aggregateProductFilters(String keyword) {
+        NativeQuery query = NativeQuery.builder()
+                .withQuery(q -> q.bool(b -> {
+                    if (keyword != null && !keyword.isBlank()) {
+                        b.must(m -> m.match(mm -> mm.field("name").query(keyword)));
+                    }
+                    return b;
+                }))
+                .withMaxResults(0)
+                .withAggregation("brands", AggregationBuilders.terms(t -> t.field("brand")))
+                .withAggregation("categories", AggregationBuilders.terms(t -> t.field("category")))
+                .withAggregation("priceRanges", AggregationBuilders.range(r -> r
+                        .field("price")
+                        .ranges(
+                                AggregationRange.of(rr -> rr.key("0-50000").to(50000.0)),
+                                AggregationRange.of(rr -> rr.key("50000-100000").from(50000.0).to(100000.0)),
+                                AggregationRange.of(rr -> rr.key("100000+").from(100000.0))
+                        )))
+                .build();
+
+        SearchHits<ProductDocument> hits = operations.search(query, ProductDocument.class);
+        return new ProductFilterAggregationResponse(
+                extractTerms(hits, "brands"),
+                extractTerms(hits, "categories"),
+                extractRanges(hits, "priceRanges")
+        );
+    }
+
+    public void recordKeyword(String keyword) {
+        if (keyword == null || keyword.isBlank()) {
+            return;
+        }
+
+        String trimmed = keyword.trim();
+        SearchKeywordDocument document = new SearchKeywordDocument(
+                null,
+                trimmed,
+                trimmed.toLowerCase(),
+                Instant.now()
+        );
+        searchKeywordRepository.save(document);
+    }
+
+    public PopularKeywordResponse getPopularKeywords(int days, int size) {
+        Instant from = LocalDateTime.now(ZoneOffset.UTC).minusDays(days).toInstant(ZoneOffset.UTC);
+
+        NativeQuery query = NativeQuery.builder()
+                .withQuery(q -> q.range(r -> r.date(d -> d.field("searchedAt").gte(from.toString()))))
+                .withMaxResults(0)
+                .withAggregation("popularKeywords", AggregationBuilders.terms(t -> t.field("normalizedKeyword")))
+                .build();
+
+        SearchHits<SearchKeywordDocument> hits = operations.search(query, SearchKeywordDocument.class);
+        List<PopularKeywordItemResponse> items = extractTerms(hits, "popularKeywords").stream()
+                .limit(size)
+                .map(bucket -> new PopularKeywordItemResponse(bucket.key(), bucket.count()))
+                .toList();
+
+        return new PopularKeywordResponse(items);
+    }
+
+    private List<ProductFilterBucketResponse> extractTerms(SearchHits<?> hits, String aggregationName) {
+        if (hits.getAggregations() == null) {
+            return List.of();
+        }
+
+        if (!(hits.getAggregations() instanceof ElasticsearchAggregations aggregations)) {
+            return List.of();
+        }
+
+        ElasticsearchAggregation aggregation = aggregations.aggregationsAsMap().get(aggregationName);
+        if (aggregation == null) {
+            return List.of();
+        }
+
+        return aggregation.aggregation().getAggregate().sterms().buckets().array().stream()
+                        .map(bucket -> new ProductFilterBucketResponse(bucket.key().stringValue(), bucket.docCount()))
+                        .toList();
+    }
+
+    private List<ProductFilterBucketResponse> extractRanges(SearchHits<?> hits, String aggregationName) {
+        if (hits.getAggregations() == null) {
+            return List.of();
+        }
+
+        if (!(hits.getAggregations() instanceof ElasticsearchAggregations aggregations)) {
+            return List.of();
+        }
+
+        ElasticsearchAggregation aggregation = aggregations.aggregationsAsMap().get(aggregationName);
+        if (aggregation == null) {
+            return List.of();
+        }
+
+        return aggregation.aggregation().getAggregate().range().buckets().array().stream()
+                        .map(bucket -> new ProductFilterBucketResponse(bucket.key(), bucket.docCount()))
+                        .toList();
     }
 }

@@ -6,7 +6,9 @@ import com.example.demo.search.presentation.dto.request.IndexConfigRequest;
 import com.example.demo.search.presentation.dto.request.ProductIndexRequest;
 import com.example.demo.search.presentation.dto.response.IndexStatusResponse;
 import com.example.demo.search.presentation.dto.response.IndexUpdateResponse;
+import com.example.demo.search.presentation.dto.response.ProductFilterAggregationResponse;
 import com.example.demo.search.presentation.dto.response.ProductSearchResponse;
+import com.example.demo.search.presentation.dto.response.ProductSuggestResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -22,7 +24,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "검색")
 // 검색/색인 관련 API 엔드포인트를 노출하는 컨트롤러
 @RestController
-@RequestMapping("/api/search")
+@RequestMapping("${api.init}/search")
 @RequiredArgsConstructor
 public class ProductSearchController {
     private final SearchService searchService;
@@ -80,5 +82,31 @@ public class ProductSearchController {
     @GetMapping("/products/index")
     public IndexStatusResponse getIndexStatus() {
         return searchService.getProductIndexStatus();
+    }
+
+    @Operation(
+        summary = "상품 자동완성",
+        description = "입력한 키워드 기준으로 상품명 자동완성 목록을 조회합니다."
+    )
+    @GetMapping("/products/suggest")
+    public ProductSuggestResponse suggestProducts(
+            @Parameter(description = "자동완성 키워드", example = "나이")
+            @RequestParam String keyword,
+            @Parameter(description = "최대 반환 개수", example = "10")
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return searchService.suggestProducts(keyword, size);
+    }
+
+    @Operation(
+        summary = "상품 필터 집계",
+        description = "검색 키워드를 기준으로 브랜드, 카테고리, 가격대별 개수를 반환합니다."
+    )
+    @GetMapping("/products/filters")
+    public ProductFilterAggregationResponse aggregateProductFilters(
+            @Parameter(description = "검색 키워드", example = "운동화")
+            @RequestParam(required = false) String keyword
+    ) {
+        return searchService.aggregateProductFilters(keyword);
     }
 }
