@@ -14,14 +14,14 @@ docker pull apache/kafka:4.1.1
 
 ```bash
 docker run -d \
-  --name backend5-kafka \
+  --name backend-study-kafka \
   -p 9092:9092 \
   apache/kafka:4.1.1
 ```
 
 설명:
 
-- `--name backend5-kafka`: 컨테이너 이름 지정
+- `--name backend-study-kafka`: 컨테이너 이름 지정
 - `-p 9092:9092`: 호스트 `9092` 포트를 Kafka `9092` 포트와 연결
 
 이 프로젝트는 `application.yaml`에서 `localhost:9092`로 Kafka에 연결합니다.  
@@ -53,7 +53,7 @@ lsof -iTCP:9092 -sTCP:LISTEN -n -P
 토픽 목록 조회:
 
 ```bash
-docker exec backend5-kafka bash -lc '/opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --list'
+docker exec backend-study-kafka bash -lc '/opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --list'
 ```
 
 지금은 토픽이 없으면 아무것도 출력되지 않을 수 있습니다.
@@ -63,19 +63,19 @@ docker exec backend5-kafka bash -lc '/opt/kafka/bin/kafka-topics.sh --bootstrap-
 중지:
 
 ```bash
-docker stop backend5-kafka
+docker stop backend-study-kafka
 ```
 
 다시 시작:
 
 ```bash
-docker start backend5-kafka
+docker start backend-study-kafka
 ```
 
 삭제:
 
 ```bash
-docker rm -f backend5-kafka
+docker rm -f backend-study-kafka
 ```
 
 ## 6. 빠른 실행 순서
@@ -106,7 +106,7 @@ PowerShell:
 
 ```powershell
 docker run -d `
-  --name backend5-kafka `
+  --name backend-study-kafka `
   -p 9092:9092 `
   apache/kafka:4.1.1
 ```
@@ -115,7 +115,7 @@ CMD:
 
 ```cmd
 docker run -d ^
-  --name backend5-kafka ^
+  --name backend-study-kafka ^
   -p 9092:9092 ^
   apache/kafka:4.1.1
 ```
@@ -123,7 +123,7 @@ docker run -d ^
 한 줄로 실행해도 됩니다.
 
 ```powershell
-docker run -d --name backend5-kafka -p 9092:9092 apache/kafka:4.1.1
+docker run -d --name backend-study-kafka -p 9092:9092 apache/kafka:4.1.1
 ```
 
 ### 3) 실행 확인
@@ -143,7 +143,7 @@ netstat -ano | findstr 9092
 ### 4) Kafka 내부 확인
 
 ```powershell
-docker exec backend5-kafka bash -lc "/opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --list"
+docker exec backend-study-kafka bash -lc "/opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --list"
 ```
 
 ### 5) 중지 / 시작 / 삭제
@@ -151,19 +151,19 @@ docker exec backend5-kafka bash -lc "/opt/kafka/bin/kafka-topics.sh --bootstrap-
 중지:
 
 ```powershell
-docker stop backend5-kafka
+docker stop backend-study-kafka
 ```
 
 다시 시작:
 
 ```powershell
-docker start backend5-kafka
+docker start backend-study-kafka
 ```
 
 삭제:
 
 ```powershell
-docker rm -f backend5-kafka
+docker rm -f backend-study-kafka
 ```
 
 ### 6) 자주 생기는 문제
