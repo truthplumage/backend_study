@@ -44,7 +44,10 @@ public class ProductCommandService implements ProductCommandUseCase {
                 toUuid(request.creatorId(), "creatorId")
         );
         Product savedProduct = productRepository.save(product);
-        eventPublisher.publishEvent(new ProductCreatedEvent(savedProduct.getId()));
+        eventPublisher.publishEvent(new ProductCreatedEvent(savedProduct.getId(),
+                savedProduct.getDescription(),
+                savedProduct.getName(),
+                "product", savedProduct.getPrice()));
         return savedProduct;
     }
 
@@ -59,7 +62,11 @@ public class ProductCommandService implements ProductCommandUseCase {
                 request.status(),
                 toUuid(request.modifierId(), "modifierId")
         );
-        eventPublisher.publishEvent(new ProductUpdatedEvent(product.getId()));
+        eventPublisher.publishEvent(new ProductUpdatedEvent(product.getId(),
+                product.getDescription(),
+                product.getName(),
+                "product",
+                product.getPrice()));
         return product;
     }
 
