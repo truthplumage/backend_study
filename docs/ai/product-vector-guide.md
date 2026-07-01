@@ -70,6 +70,34 @@
 
 - 엔티티: [Product.java](../../src/main/java/com/example/demo/product/domain/model/Product.java)
 - DB 컬럼 SQL: [product-pgvector.sql](../../src/main/resources/db/product-pgvector.sql)
+- Docker 설정: [docker-compose.pgvector.yml](../../docker-compose.pgvector.yml)
+- pgvector 초기화: [001-create-vector.sql](../../docker/postgres/init/001-create-vector.sql)
+
+## Docker로 테스트하기
+
+1. pgvector가 포함된 PostgreSQL을 띄웁니다.
+
+```bash
+docker compose -f docker-compose.pgvector.yml up -d
+```
+
+2. 앱은 Docker 포트에 맞춰 실행합니다.
+
+```bash
+DB_PORT=5433 ./gradlew bootRun
+```
+
+3. vector 연산이 되는지 바로 확인합니다.
+
+```sql
+SELECT '[1,2,3]'::vector(3) <=> '[1,2,3]'::vector(3) AS distance;
+```
+
+결과가 `0`이면 pgvector가 정상적으로 동작합니다.
+
+4. 기존 `product` 테이블이 이미 있으면 벡터 컬럼 변환 SQL을 한 번 적용합니다.
+
+- [product-pgvector.sql](../../src/main/resources/db/product-pgvector.sql)
 
 ## 지금 단계에서 기억할 것
 

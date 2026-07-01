@@ -4,15 +4,13 @@
 
 ## 한 줄로 보면
 
-질문을 넣으면  
-먼저 비슷한 상품을 찾고  
-그 상품들을 보고 LLM이 답변을 만듭니다.
+질문을 넣으면 먼저 pgvector로 비슷한 상품을 찾고 그 상품들을 보고 LLM이 답변을 만듭니다.
 
 ## 순서
 
 1. 사용자가 질문 입력
 2. 질문을 벡터로 변환
-3. 비슷한 상품 검색
+3. pgvector로 비슷한 상품 검색
 4. 검색된 상품 목록을 LLM에 전달
 5. LLM이 답변 생성
 
@@ -98,11 +96,11 @@ OPENAI_API_KEY=...
 
 ## 관련 파일
 
-- API: [ProductController.java](../../src/main/java/com/example/demo/product/presentation/controller/ProductController.java)
 - 서비스: [ProductApplicationService.java](../../src/main/java/com/example/demo/product/application/service/ProductApplicationService.java)
 - 요청 DTO: [ProductLlmSearchRequest.java](../../src/main/java/com/example/demo/product/presentation/dto/request/ProductLlmSearchRequest.java)
 - 응답 DTO: [ProductLlmSearchResponse.java](../../src/main/java/com/example/demo/product/presentation/dto/response/ProductLlmSearchResponse.java)
 - OpenAI 구현: [OpenAiProductLlmAnswerGenerator.java](../../src/main/java/com/example/demo/product/infrastructure/llm/OpenAiProductLlmAnswerGenerator.java)
+- 상품 API: [ProductController.java](../../src/main/java/com/example/demo/product/presentation/ProductController.java)
 
 ## 지금 기억할 것
 

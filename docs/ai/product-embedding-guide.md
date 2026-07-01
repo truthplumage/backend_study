@@ -43,7 +43,7 @@
 
 1. 사용자가 문장으로 검색
 2. 검색어도 임베딩으로 변환
-3. `product.embedding`과 비교
+3. pgvector로 `product.embedding`과 비교
 4. 가장 비슷한 상품 반환
 
 ## API
@@ -84,6 +84,12 @@ openai:
 OPENAI_API_KEY=...
 ```
 
+Docker로 로컬 테스트를 할 때는 PostgreSQL 포트를 같이 맞춥니다.
+
+```bash
+DB_PORT=5433 ./gradlew bootRun
+```
+
 ## 꺼져 있으면
 
 - 상품은 저장됩니다
@@ -96,7 +102,7 @@ OPENAI_API_KEY=...
 - OpenAI 구현: [OpenAiProductEmbeddingGenerator.java](../../src/main/java/com/example/demo/product/infrastructure/vector/OpenAiProductEmbeddingGenerator.java)
 - 비활성 구현: [NoOpProductEmbeddingGenerator.java](../../src/main/java/com/example/demo/product/infrastructure/vector/NoOpProductEmbeddingGenerator.java)
 - 상품 서비스: [ProductApplicationService.java](../../src/main/java/com/example/demo/product/application/service/ProductApplicationService.java)
-- 상품 API: [ProductController.java](../../src/main/java/com/example/demo/product/presentation/controller/ProductController.java)
+- 상품 API: [ProductController.java](../../src/main/java/com/example/demo/product/presentation/ProductController.java)
 
 ## 지금 기억할 것
 
