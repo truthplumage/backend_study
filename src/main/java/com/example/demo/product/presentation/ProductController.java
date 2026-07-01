@@ -1,10 +1,13 @@
 package com.example.demo.product.presentation;
 
 import com.example.demo.product.application.usecase.ProductCommandUseCase;
+import com.example.demo.product.application.service.ProductApplicationService;
 import com.example.demo.product.application.usecase.ProductQueryUseCase;
 import com.example.demo.product.domain.model.Product;
 import com.example.demo.product.presentation.dto.ProductCreateRequest;
 import com.example.demo.product.presentation.dto.ProductUpdateRequest;
+import com.example.demo.product.presentation.dto.request.ProductLlmSearchRequest;
+import com.example.demo.product.presentation.dto.response.ProductLlmSearchResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -15,16 +18,18 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("${api.init}/product")
+@RequestMapping({ "${api.init}/product", "${api.init}/products" })
 @RequiredArgsConstructor
 public class ProductController {
     private final ProductCommandUseCase productCommandUseCase;
     private final ProductQueryUseCase productQueryUseCase;
+    private final ProductApplicationService productApplicationService;
     @PostMapping
     @Operation(summary = "상품 생성", description = "신규 상품을 생성합니다.")
     @ApiResponses({
@@ -78,5 +83,43 @@ public class ProductController {
     public ResponseEntity<Void> delete(@Parameter(description = "상품 UUID") @PathVariable UUID productId) {
         productCommandUseCase.delete(productId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/semantic-search")
+    @Operation(summary = "상품 의미 검색", description = "상품 이름과 설명 임베딩을 기준으로 가장 비슷한 상품을 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공")
+    })
+    public List<Product> semanticSearch(
+            @Parameter(description = "검색어", example = "영상 편집용 노트북")
+            @RequestParam String query,
+            @Parameter(description = "최대 반환 개수", example = "5")
+            @RequestParam(defaultValue = "5") int size
+    ) {
+        return productApplicationService.semanticSearch(query, size);
+    }
+
+    @PostMapping("/embeddings/refresh")
+    @Operation(summary = "상품 임베딩 재생성", description = "저장된 상품 전체에 대해 임베딩을 다시 생성합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "재생성 완료")
+    })
+    public ResponseEntity<Void> refreshEmbeddings() {
+        productApplicationService.refreshEmbeddings();
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/llm-search")
+    @Operation(summary = "상품 LLM 검색", description = "비슷한 상품을 찾고 검색 결과를 바탕으로 LLM이 답변을 생성합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "검색 성공",
+                    content = @Content(schema = @Schema(implementation = ProductLlmSearchResponse.class)))
+    })
+    public ProductLlmSearchResponse llmSearch(@RequestBody ProductLlmSearchRequest request) {
+        if (request == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "request is required");
+        }
+        int size = request.size() == null ? 3 : request.size();
+        return productApplicationService.llmSearch(request.question(), size);
     }
 }

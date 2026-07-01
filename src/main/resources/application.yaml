@@ -29,6 +29,19 @@ settlement:
     cron: "0 0 3 * * *"
     actor-id: 00000000-0000-0000-0000-000000000000
 
+openai:
+  api-key: ${OPENAI_API_KEY:}
+  chat:
+    enabled: false
+    model: gpt-5.4-mini
+  embedding:
+    enabled: false
+    model: text-embedding-3-small
+  image-analysis:
+    model: gpt-5.4-nano
+  image:
+    model: gpt-image-1-mini
+
 jwt:
   private-key: ${PRIVATE_KEY}
   public-key: ${PUBLIC_KEY}

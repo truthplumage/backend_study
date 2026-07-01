@@ -24,6 +24,8 @@ dependencies {
     //DB
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     runtimeOnly 'org.postgresql:postgresql'
+    implementation 'org.hibernate.orm:hibernate-vector:7.2.12.Final'
+    implementation 'com.pgvector:pgvector:0.1.6'
     //batch
     implementation 'org.springframework.boot:spring-boot-starter-batch'
     //lombok

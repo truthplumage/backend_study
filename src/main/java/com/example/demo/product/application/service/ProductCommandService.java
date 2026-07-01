@@ -4,6 +4,7 @@ import com.example.demo.product.application.acl.SellerValidationAcl;
 import com.example.demo.product.application.event.ProductCreatedEvent;
 import com.example.demo.product.application.event.ProductDeletedEvent;
 import com.example.demo.product.application.event.ProductUpdatedEvent;
+import com.example.demo.product.application.vector.ProductEmbeddingService;
 import com.example.demo.product.application.usecase.ProductCommandUseCase;
 import com.example.demo.product.domain.model.Product;
 import com.example.demo.product.domain.model.SellerValidation;
@@ -26,6 +27,7 @@ public class ProductCommandService implements ProductCommandUseCase {
 
     private final ProductRepository productRepository;
     private final SellerValidationAcl sellerValidationAcl;
+    private final ProductEmbeddingService productEmbeddingService;
     private final ApplicationEventPublisher eventPublisher;
 
     @Override
@@ -43,6 +45,7 @@ public class ProductCommandService implements ProductCommandUseCase {
                 request.status(),
                 toUuid(request.creatorId(), "creatorId")
         );
+        productEmbeddingService.applyEmbedding(product);
         Product savedProduct = productRepository.save(product);
         eventPublisher.publishEvent(new ProductCreatedEvent(savedProduct.getId(),
                 savedProduct.getDescription(),
@@ -62,6 +65,7 @@ public class ProductCommandService implements ProductCommandUseCase {
                 request.status(),
                 toUuid(request.modifierId(), "modifierId")
         );
+        productEmbeddingService.applyEmbedding(product);
         eventPublisher.publishEvent(new ProductUpdatedEvent(product.getId(),
                 product.getDescription(),
                 product.getName(),

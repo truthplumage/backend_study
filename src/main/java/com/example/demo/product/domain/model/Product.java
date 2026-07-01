@@ -3,6 +3,9 @@ package com.example.demo.product.domain.model;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.Getter;
+import org.hibernate.annotations.Array;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -41,6 +44,12 @@ public class Product {
     @Column(nullable = false, length = 20)
     @Schema(description = "상태", example = "ACTIVE")
     private String status;
+
+    @Schema(hidden = true)
+    @JdbcTypeCode(SqlTypes.VECTOR)
+    @Array(length = 1536)
+    @Column(name = "embedding")
+    private float[] embedding;
 
     @Column(name = "reg_id", nullable = false)
     @Schema(description = "등록자 ID", example = "22222222-2222-2222-2222-222222222222")
@@ -102,6 +111,14 @@ public class Product {
         this.stock = stock;
         this.status = status;
         this.modifyId = modifierId;
+    }
+
+    public void updateEmbedding(float[] embedding) {
+        this.embedding = embedding;
+    }
+
+    public float[] getEmbedding() {
+        return embedding;
     }
 
     @PrePersist
