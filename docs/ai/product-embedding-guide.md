@@ -51,13 +51,13 @@
 벡터 검색:
 
 ```http
-GET /api/products/semantic-search?query=영상 편집용 노트북&size=5
+GET /api/v1/products/semantic-search?query=영상 편집용 노트북&size=5
 ```
 
 전체 임베딩 재생성:
 
 ```http
-POST /api/products/embeddings/refresh
+POST /api/v1/products/embeddings/refresh
 ```
 
 ## 설정
@@ -92,11 +92,11 @@ OPENAI_API_KEY=...
 
 ## 관련 파일
 
-- 서비스: [ProductEmbeddingService.java](../../src/main/java/com/grepp/backend5/product/application/vector/ProductEmbeddingService.java)
-- OpenAI 구현: [OpenAiProductEmbeddingGenerator.java](../../src/main/java/com/grepp/backend5/product/infrastructure/vector/OpenAiProductEmbeddingGenerator.java)
-- 비활성 구현: [NoOpProductEmbeddingGenerator.java](../../src/main/java/com/grepp/backend5/product/infrastructure/vector/NoOpProductEmbeddingGenerator.java)
-- 상품 서비스: [ProductApplicationService.java](../../src/main/java/com/grepp/backend5/product/application/service/ProductApplicationService.java)
-- 상품 API: [ProductController.java](../../src/main/java/com/grepp/backend5/product/presentation/controller/ProductController.java)
+- 서비스: [ProductEmbeddingService.java](../../src/main/java/com/example/demo/product/application/vector/ProductEmbeddingService.java)
+- OpenAI 구현: [OpenAiProductEmbeddingGenerator.java](../../src/main/java/com/example/demo/product/infrastructure/vector/OpenAiProductEmbeddingGenerator.java)
+- 비활성 구현: [NoOpProductEmbeddingGenerator.java](../../src/main/java/com/example/demo/product/infrastructure/vector/NoOpProductEmbeddingGenerator.java)
+- 상품 서비스: [ProductApplicationService.java](../../src/main/java/com/example/demo/product/application/service/ProductApplicationService.java)
+- 상품 API: [ProductController.java](../../src/main/java/com/example/demo/product/presentation/controller/ProductController.java)
 
 ## 지금 기억할 것
 

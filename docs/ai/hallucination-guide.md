@@ -69,7 +69,7 @@ LLM은 원래
 
 ## 지금 코드에서 보면
 
-- 벡터 검색 API: [ProductController.java](../../src/main/java/com/grepp/backend5/product/presentation/controller/ProductController.java)
+- 벡터 검색 API: [ProductController.java](../../src/main/java/com/example/demo/product/presentation/controller/ProductController.java)
 - LLM 검색 문서: [product-llm-search-guide.md](./product-llm-search-guide.md)
 
 ## 지금 기억할 것

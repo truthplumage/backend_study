@@ -11,10 +11,10 @@
 ## 2. 현재 코드 구조
 
 ### 배치 핵심 클래스
-- `Job/Step 설정`: `src/main/java/com/grepp/backend5/batch/config/SettlementBatchConfig.java`
-- `Tasklet 로직`: `src/main/java/com/grepp/backend5/batch/job/SettlementTasklet.java`
-- `Job 실행 서비스`: `src/main/java/com/grepp/backend5/batch/service/SettlementJobLauncher.java`
-- `실행 API`: `src/main/java/com/grepp/backend5/batch/presentation/BatchJobController.java`
+- `Job/Step 설정`: `src/main/java/com/example/demo/batch/config/SettlementBatchConfig.java`
+- `Tasklet 로직`: `src/main/java/com/example/demo/batch/job/SettlementTasklet.java`
+- `Job 실행 서비스`: `src/main/java/com/example/demo/batch/service/SettlementJobLauncher.java`
+- `실행 API`: `src/main/java/com/example/demo/batch/presentation/BatchJobController.java`
 
 ### 현재 제공되는 Job
 1. `settlementJob` (Tasklet 방식)

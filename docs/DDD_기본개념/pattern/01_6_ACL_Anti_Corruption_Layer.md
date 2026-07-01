@@ -34,14 +34,14 @@ ACL을 두면 외부 변경은 ACL 내부에서만 처리하면 됩니다.
 
 ### 실제 클래스 위치
 - ACL 포트(내부 인터페이스)
-  - `src/main/java/com/grepp/backend5/product/application/acl/SellerAcl.java`
+  - `src/main/java/com/example/demo/product/application/acl/SellerAcl.java`
 - 내부 모델
-  - `src/main/java/com/grepp/backend5/product/application/acl/SellerIdentity.java`
+  - `src/main/java/com/example/demo/product/application/acl/SellerIdentity.java`
 - ACL 어댑터(번역기)
-  - `src/main/java/com/grepp/backend5/product/infrastructure/acl/SellerAclAdapter.java`
+  - `src/main/java/com/example/demo/product/infrastructure/acl/SellerAclAdapter.java`
 - 외부 클라이언트(현재는 스텁)
-  - `src/main/java/com/grepp/backend5/product/infrastructure/acl/client/ExternalSellerClient.java`
-  - `src/main/java/com/grepp/backend5/product/infrastructure/acl/client/StubExternalSellerClient.java`
+  - `src/main/java/com/example/demo/product/infrastructure/acl/client/ExternalSellerClient.java`
+  - `src/main/java/com/example/demo/product/infrastructure/acl/client/StubExternalSellerClient.java`
 
 ---
 

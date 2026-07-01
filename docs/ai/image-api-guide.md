@@ -88,10 +88,10 @@ base64 문자열을 응답으로 줍니다.
 
 ## 관련 파일
 
-- 컨트롤러: [AiImageController.java](../../src/main/java/com/grepp/backend5/ai/presentation/controller/AiImageController.java)
-- 서비스: [AiImageService.java](../../src/main/java/com/grepp/backend5/ai/application/service/AiImageService.java)
-- OpenAI 호출: [OpenAiImageClient.java](../../src/main/java/com/grepp/backend5/ai/infrastructure/client/OpenAiImageClient.java)
-- WebClient 설정: [RestClientConfig.java](../../src/main/java/com/grepp/backend5/config/RestClientConfig.java)
+- 컨트롤러: [AiImageController.java](../../src/main/java/com/example/demo/ai/presentation/controller/AiImageController.java)
+- 서비스: [AiImageService.java](../../src/main/java/com/example/demo/ai/application/service/AiImageService.java)
+- OpenAI 호출: [OpenAiImageClient.java](../../src/main/java/com/example/demo/ai/infrastructure/client/OpenAiImageClient.java)
+- WebClient 설정: [RestClientConfig.java](../../src/main/java/com/example/demo/config/RestClientConfig.java)
 
 ## 현재 설정
 

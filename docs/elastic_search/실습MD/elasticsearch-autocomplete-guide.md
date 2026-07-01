@@ -26,7 +26,7 @@
 ### 클래스 구조
 
 ```text
-src/main/java/com/grepp/backend5/search
+src/main/java/com/example/demo/search
 ├─ presentation
 │  ├─ controller
 │  │  └─ ProductSearchController.java
