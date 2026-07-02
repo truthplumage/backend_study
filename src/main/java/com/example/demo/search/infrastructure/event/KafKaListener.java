@@ -6,11 +6,12 @@ import com.example.demo.product.infrastructure.event.dto.ProductSave;
 import com.example.demo.product.infrastructure.event.dto.ProductToSearch;
 import com.example.demo.search.application.SearchUsecase;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 @Component
+@ConditionalOnProperty(prefix = "kafka", name = "enabled", havingValue = "true")
 @RequiredArgsConstructor
 public class KafKaListener {
     private final SearchUsecase searchUsecase;

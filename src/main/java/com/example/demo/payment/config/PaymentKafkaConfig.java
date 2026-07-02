@@ -24,7 +24,7 @@ public class PaymentKafkaConfig {
     private String bootstrapServers;
 
     @Bean
-    public ProducerFactory<String, MarkOrderPaidCommand> orderProducerFactory() {
+    public ProducerFactory<String, MarkOrderPaidCommand> paymentProducerFactory() {
         // Kafka 프로듀서가 사용할 직렬화 및 연결 정보를 구성한다.
         Map<String, Object> config = new HashMap<>();
         config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers); // 프로듀서가 연결할 브로커 주소
@@ -36,8 +36,8 @@ public class PaymentKafkaConfig {
     }
 
     @Bean
-    public KafkaTemplate<String, MarkOrderPaidCommand> orderKafkaTemplate() {
+    public KafkaTemplate<String, MarkOrderPaidCommand> paymentKafkaTemplate() {
         // ProducerFactory 기반 KafkaTemplate을 생성한다.
-        return new KafkaTemplate<>(orderProducerFactory());
+        return new KafkaTemplate<>(paymentProducerFactory());
     }
 }

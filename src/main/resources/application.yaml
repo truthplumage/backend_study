@@ -47,7 +47,7 @@ jwt:
   public-key: ${PUBLIC_KEY}
 
 kafka:
-  enabled: true
+  enabled: false
   bootstrap-servers: localhost:9092
   topic:
     async-orders: async-orders
